@@ -4,10 +4,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.hardware.Camera;
 import android.media.MediaMetadataRetriever;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
@@ -32,6 +34,7 @@ import com.phone.uin.model.BaseResponse;
 import com.phone.uin.utils.FaceRect;
 import com.phone.uin.utils.FaceUtil;
 import com.phone.uin.utils.JsonUtil;
+import com.phone.uin.utils.LogUtil;
 import com.phone.uin.utils.MD5Util;
 import com.phone.uin.utils.ParseResult;
 import com.phone.uin.utils.StaticArguments;
@@ -41,6 +44,9 @@ import com.phone.uin.widget.RecordVideoInterface;
 import com.phone.uin.widget.RecordVideoSurfaceView;
 import com.phone.uin.widget.ShowToast;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -388,6 +394,7 @@ public class RecordVideoActivity extends Activity implements View.OnClickListene
      * @param
      */
     public void startRecord() {
+        shoot(0);
         clickPowerStatus = 1;
         this.initData();
         try {
@@ -405,15 +412,39 @@ public class RecordVideoActivity extends Activity implements View.OnClickListene
                     } else if (mTimeCount == 4) {//2s
                         // 显示左右摇头
                         mHandler.sendEmptyMessage(StaticArguments.SHOW_SHAKEHEAD);
+                        shoot(1);
                     } else if (mTimeCount == 6) { //4s
                         // 显示点头
                         mHandler.sendEmptyMessage(StaticArguments.SHOW_NODHEAD);
+                        shoot(2);
                     }
                     mTimeCount++;
                 }
             }, 0, 1000);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void shoot(int i) {
+        Bitmap screenshot;
+        screenshot = Bitmap.createBitmap(surFaceViewPreview.getWidth(),surFaceViewPreview.getHeight(),Bitmap.Config.RGB_565);
+        Canvas c = new Canvas(screenshot);
+        c.translate(-surFaceViewPreview.getScrollX(),-surFaceViewPreview.getScaleY());
+        surFaceViewPreview.draw(c);
+
+        //保存到本地
+        String PATH = Environment.getExternalStorageDirectory().getPath() + File.separator + "AC/Video";
+        File file = new File(PATH + File.separator + i + ".jpg");
+
+        try {
+            FileOutputStream fos = new FileOutputStream(file);
+            screenshot.compress(Bitmap.CompressFormat.JPEG,100,fos);
+            fos.flush();
+            fos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            LogUtil.e("luka","e:"+e.getMessage());
         }
     }
 

@@ -9,7 +9,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".ui.ImmortalApproveActivity">
+        <activity android:name=".ui.FaceVerifyActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -17,9 +17,9 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".ui.FaceVerifyActivity"
-            android:screenOrientation="portrait"></activity>
+        <!--<activity-->
+            <!--android:name=".ui.FaceVerifyActivity"-->
+            <!--android:screenOrientation="portrait"></activity>-->
         <activity
             android:name=".ui.ShootIdCardActivity"
             android:screenOrientation="portrait"></activity>
